@@ -17,13 +17,13 @@ NT2-01 aşağıdaki şartlar tamamlanmadan kapanmaz:
 - [x] Upstream CI baseline'ın ruff/pytest/gitleaks/mypy/build işleri yeşil olarak doğrulandı.
 - [x] Netİtibar upstream lock politikası repo içine yazıldı.
 - [ ] Native/local Python 3.12 virtualenv kurulumu yapıldı.
-- [ ] PostgreSQL 16 veya uyumlu yerel PostgreSQL ile test DB oluşturuldu.
 - [ ] `pip install -r requirements.txt` temiz tamamlandı.
+- [ ] SQLite development smoke (`migrate`, `manage.py check`) geçti.
 - [ ] `ruff check .` geçti.
 - [ ] `ruff format --check .` geçti.
 - [ ] `mypy apps/ config/ providers/ tests/ --ignore-missing-imports` geçti.
-- [ ] `pytest --cov=apps --cov-report=term-missing` geçti.
-- [ ] `python manage.py check` geçti.
+- [ ] PostgreSQL 16 veya uyumlu yerel PostgreSQL ile test DB oluşturuldu.
+- [ ] `pytest --cov=apps --cov-report=term-missing` PostgreSQL üzerinde geçti.
 - [ ] Migration drift kontrolü geçti (`makemigrations --check --dry-run`).
 - [ ] Python 3.13 compatibility smoke sonucu kaydedildi veya bilinçli olarak ertelendi.
 
@@ -31,7 +31,12 @@ NT2-01 aşağıdaki şartlar tamamlanmadan kapanmaz:
 
 Netİtibar'ın kendi kalite kapısı GitHub Actions'a bağımlı değildir. Upstream workflow dosyaları fork geçmişinin parçası olarak korunabilir; ancak Netİtibar feature'larının tamamlanmış sayılması için local/native doğrulama çıktıları esas alınır.
 
-### Önerilen ilk kurulum
+BrightBean iki farklı yerel doğrulama seviyesini destekliyor:
+
+1. **Hızlı development smoke:** SQLite ile; Docker ve PostgreSQL kurmadan uygulama ayağa kalkar.
+2. **Tam test parity:** Upstream `config/settings/test.py` test veritabanını PostgreSQL'e sabitler. Bu yüzden tam `pytest` kapısı PostgreSQL gerektirir.
+
+### Aşama A — SQLite hızlı smoke
 
 ```bash
 python3.12 -m venv .venv
@@ -41,18 +46,46 @@ pip install -r requirements.txt
 cp .env.example .env
 ```
 
-PostgreSQL test veritabanı için upstream CI parity hedefi PostgreSQL 16'dır.
+`.env` içindeki `DATABASE_URL` değerini development smoke için:
 
-### Kalite komutları
+```text
+DATABASE_URL=sqlite:///db.sqlite3
+```
+
+olarak ayarla. Ardından:
 
 ```bash
+python manage.py migrate
+python manage.py check
+python manage.py makemigrations --check --dry-run
 ruff check .
 ruff format --check .
 mypy apps/ config/ providers/ tests/ --ignore-missing-imports
-pytest --cov=apps --cov-report=term-missing
-python manage.py check
-python manage.py makemigrations --check --dry-run
 ```
+
+Bu aşama uygulama kurulumunu, migration bütünlüğünü ve DB gerektirmeyen kalite kapılarını hızlıca doğrular.
+
+### Aşama B — PostgreSQL tam test parity
+
+Upstream CI parity hedefi:
+
+- Python 3.12
+- PostgreSQL 16
+- test DB adı: `brightbean_test`
+- kullanıcı: `postgres`
+- varsayılan parola: `postgres` yalnız yerel test ortamında
+
+Tam test:
+
+```bash
+export DB_HOST=localhost
+export DB_USER=postgres
+export DB_PASSWORD=postgres
+export DB_PORT=5432
+pytest --cov=apps --cov-report=term-missing
+```
+
+`config/settings/test.py` PostgreSQL backend'i doğrudan kullandığı için bu testin SQLite ile geçirilmiş gibi gösterilmesi yasaktır.
 
 ## Foundation sırasında değiştirmeyeceğimiz şeyler
 
