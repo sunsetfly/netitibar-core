@@ -1,0 +1,24 @@
+governance:
+  authority: sunsetfly/kurallar
+  version: "1.0.0"
+  tag: "v1.0.0"
+  sha: "cfcb83c646fc14b414fd0cd692cdba04b62be07e"
+  source: "https://github.com/sunsetfly/kurallar/tree/cfcb83c646fc14b414fd0cd692cdba04b62be07e"
+  status: mandatory
+  required_documents:
+    - CONSTITUTION.md
+    - AGENTS.md
+    - engineering-policy.yaml
+  workflow:
+    - work_document
+    - existing_capability_audit
+    - donor_research
+    - donor_decision
+    - best_practice_if_no_acceptable_donor
+    - minimal_custom_implementation
+    - test
+    - evidence
+    - acceptance_audit
+    - definition_of_done
+    - commit
+  precedence: "Repository-local rules may strengthen but must not silently weaken central governance."
