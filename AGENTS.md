@@ -4,22 +4,26 @@
 This repository is governed by the central engineering constitution in `sunsetfly/kurallar`.
 
 Pinned governance release:
-- Version: `1.0.0`
-- Tag: `v1.0.0`
-- Commit SHA: `cfcb83c646fc14b414fd0cd692cdba04b62be07e`
-- Authority: https://github.com/sunsetfly/kurallar/tree/cfcb83c646fc14b414fd0cd692cdba04b62be07e
+- Version: `1.1.0`
+- Tag: `v1.1.0`
+- Commit SHA: `c872e1b6edca1385182423d023dca77c49947487`
+- Authority: https://github.com/sunsetfly/kurallar/tree/c872e1b6edca1385182423d023dca77c49947487
 
 Before any material phase, sprint, remediation, refactor, integration, migration, architecture change or implementation, the agent MUST read and obey the pinned versions of:
 1. `CONSTITUTION.md`
 2. `AGENTS.md`
 3. `engineering-policy.yaml`
-4. relevant files under `policies/`
-5. the active repository-tracked work document
+4. `policies/AI_EXECUTION_POLICY.md` and `ai-model-catalog.yaml` for material AI-assisted work
+5. relevant files under `policies/`
+6. the active repository-tracked work document
 
 Mandatory execution order:
-`Work Document -> Existing/Native Capability Audit -> Donor Research -> Donor Decision -> Best Practice if no acceptable donor -> Minimal Custom Code -> Test -> Evidence -> Acceptance Audit -> Definition of Done -> Commit`
+`Work Document -> Inspect -> AI Execution Profile -> Existing/Native Capability Audit -> Donor Research -> Donor Decision -> Best Practice if no acceptable donor -> Minimal Custom Code -> Test -> Evidence -> Acceptance Audit -> Definition of Done -> Commit`
 
 Hard rules:
+- For material AI-assisted work, classify E0/E1/E2/E3 and record surface/model/reasoning selection.
+- Use the least scarce adequate AI capability; escalate only on evidence and de-escalate after the difficult portion.
+- Model choice never expands authorization or replaces missing access/context.
 - Reuse before build; do not reinvent an adequate existing capability.
 - Donor research is mandatory before material custom implementation.
 - If no acceptable donor exists, best-practice analysis is mandatory before custom implementation.
